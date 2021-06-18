@@ -8,5 +8,5 @@ services:
       dockerfile: docker/04-07-persistent-databases/signup-db/Dockerfile
     volumes:
       - type: bind
-        source: C:\databases
+        source: D:\databases
         target: C:\data
