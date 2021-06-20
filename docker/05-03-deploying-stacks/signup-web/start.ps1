@@ -1,11 +1,11 @@
 function EnsureConfigFile {
     param([string] $path)
 
-    if (Test-Path $path) {    
+    if (Test-Path $path) {
         Write-Output "STARTUP: Config file exists at $path"
     }
     else {
-        $source = "$($path).default"            
+        $source = "$($path).default"
         New-Item -Path $path `
                  -ItemType SymbolicLink `
                  -Value $source
