@@ -117,7 +117,9 @@ vagrant up
  VBoxManage.exe: error: Details: code E_FAIL (0x80004005), component ConsoleWrap, interface IConsole
 **** the diff is that for vb 6.1, VB can invoke on Win10
  https://www.tcg.com/blog/yes-you-can-run-docker-and-virtualbox-on-windows-10-home/
-**** START S5L2 Problem with "vagrant up"
+**** DONE S5L2 Problem with "vagrant up"
+     CLOSED: [2021-06-18 Fri 10:56]
+     - State "DONE"       from "START"      [2021-06-18 Fri 10:56]
      - State "START"      from              [2021-06-07 Mon 10:53]
 ***** problem description
   I have been able to run all the examples as I follow the videos in Sections 1 to 4.
@@ -220,6 +222,44 @@ as well.
 
 If the box appears to be booting properly, you may want to increase
 the timeout ("config.vm.boot_timeout") value.
+***** I am writing this to close the ticket. The cause is a comedy of errors that I will explain later.
+Summary: 
+Based on this url, https://computingforgeeks.com/enable-hyper-v-and-install-vagrant-in-windows/
+I uninstalled VirtualBox, and turned on my Hyper-V settings. 
+
+Then, the simple "getting started" instructions ( https://learn.hashicorp.com/tutorials/vagrant/getting-started-index?in=vagrant/getting-started )
+now work, ie 
+   vagrant box add hashicorp/bionic64 // select hyperv provider when prompted
+   vagrant up
+   vagrant ssh  
+
+Comedy of errors:
+  1. I had been using VirtualBox before Docker, and had disabled it while Docker was active.
+  2. Vagrant works with several providers like VirtualBox and HyperV, so it assumed that I wanted to use VirtualBox
+  3. That led me to upgrade my VirtualBox from 5.2 to 6.1 but there were still issues.
+  4. The class video I viewed showed that Elton's "vagrant status" was running in HyperV, not VirtualBox, giving 
+     me the clue to uninstall VirtualBox and try again. 
+**** START S5L2 winworker - windows version incompatible
+     - State "START"      from              [2021-06-18 Fri 10:56]
+I am on Section 5, Lesson 2 and trying to run vagrant with hyperv, on Windows 10.
+
+The "vagrant up" runs but has the following message at the end of the run:
+
+>    winworker: Status: Downloaded newer image for docker4dotnet/homepage:05-03
+>    winworker: docker.io/docker4dotnet/homepage:05-03
+>    winworker: 05-03: Pulling from docker4dotnet/save-handler
+>    winworker: a Windows version 10.0.19042-based image is incompatible with a 10.0.17763 host
+
+I understand that for "hyper-v", the windows image version must exactly match. This is a bad situation, 
+because Windows 10 tries to update my PC regularly. In fact my 10.0.19042 update happened just a few
+days ago.
+
+Instead of providing another image for a specific windows version ( moving target ), it might be more
+useful to show how a user can update the Dockerfile to get the correct version of windows image and
+the changes needed in the Vagrantfile to get this lecture example working again. Just a suggestion.
+
+Thanks and hope I hear from someone soon. 
+
 *** simple vagrant startup
 **** c:\tmp>vagrant init hashicorp/bionic64
 A `Vagrantfile` has been placed in this directory. You are now
@@ -2316,6 +2356,9 @@ vagrant ssh manager
 docker swarm init
 ```
 
+docker swarm join --token SWMTKN-1-465ztyegx85cx8i1gzsipo53m2xnzw000jej568n80bszl1u2o-1nek61xpib3pz11ip8gt6tznz 172.24.242.1:2377
+worker: 172.24.241.14
+
 > You now have a functional single-node Swarm. The output shows the command you run on other nodes to join the Swarm. 
 
 _You can manage the other nodes from the manager:_
@@ -2343,6 +2386,7 @@ ip a
 
 # docker swarm join [join-token] --advertise-addr [ip address]
 ```
+docker swarm join --token SWMTKN-1-465ztyegx85cx8i1gzsipo53m2xnzw000jej568n80bszl1u2o-1nek61xpib3pz11ip8gt6tznz 172.24.242.1:2377 --advertise-addr 172.24.241.14
 
 > Docker can work out the machine's IP address, but you should specify it if you have multiple addresses.
 
@@ -2353,6 +2397,7 @@ docker info
 
 exit
 ```
+https://forums.docker.com/t/docker-worker-nodes-shown-as-down-after-re-start/22329
 
 ** Join a Windows worker node
 
@@ -2368,7 +2413,8 @@ ipconfig
 
 # docker swarm join [join-token] --advertise-addr [ip address]
 ```
-
+winworker: 172.24.248.7
+docker swarm join --token SWMTKN-1-465ztyegx85cx8i1gzsipo53m2xnzw000jej568n80bszl1u2o-1nek61xpib3pz11ip8gt6tznz 172.24.242.1:2377 --advertise-addr 172.24.248.7
 ** Run a simple app
 
 Worker nodes just run your workloads, they're assigned work by the manager. You run `docker` commands on the manager and typically leave the workers alone.
@@ -2398,6 +2444,8 @@ docker node inspect worker -f '{{.Status.Addr}}'
 
 docker node inspect manager -f '{{.Status.Addr}}'
 ```
+
+Bug: winworker shows it is running on linux
 
 > There's a single container running the service, but you can browse to port `8080` on any node and the traffic gets routed to the container.
 
@@ -2436,3 +2484,43 @@ Services are first-class citizens which you administer on the manager node. Swar
 Now we have a cluster running and we've seen how services are created and deployed as containers on the nodes. 
 
 Next we'll see how the Docker Compose format supports Swarm mode. You can model your applications to deploy them to the cluster and take full advantage of the orchestration features.
+
+** ?Missing lecture material : how to shut/restart vagrant and docker swarm
+At the close of the lecture, everything is left running. It would be useful for students to learn
+how to shut down docker swarm, then vagrant in preparation for another session.
+For example, I had to restart my PC because there were some updates going on. 
+
+*** transcript of vagrant destroy
+**** PS C:\cprojects\github\khtan-private\docker4.net\vagrant\05> vagrant status
+ Current machine states:
+
+ manager                   off (hyperv)
+ worker                    off (hyperv)
+ worker2                   off (hyperv)
+ winworker                 off (hyperv)
+
+ This environment represents multiple VMs. The VMs are all listed
+ above with their current state. For more information about a specific
+ VM, run `vagrant status NAME`.
+****  PS C:\cprojects\github\khtan-private\docker4.net\vagrant\05> vagrant destroy
+     winworker: Are you sure you want to destroy the 'winworker' VM? [y/N] Y
+ ==> winworker: Stopping the machine...
+ ==> winworker: Deleting the machine...
+     worker2: Are you sure you want to destroy the 'worker2' VM? [y/N] y
+ ==> worker2: Stopping the machine...
+ ==> worker2: Deleting the machine...
+
+ Vagrant requires administrator access for pruning SMB shares and
+ may request access to complete removal of stale shares.
+     worker: Are you sure you want to destroy the 'worker' VM? [y/N] y
+ ==> worker: Stopping the machine...
+ ==> worker: Deleting the machine...
+
+ Vagrant requires administrator access for pruning SMB shares and
+ may request access to complete removal of stale shares.
+     manager: Are you sure you want to destroy the 'manager' VM? [y/N] y
+ ==> manager: Stopping the machine...
+ ==> manager: Deleting the machine...
+
+ Vagrant requires administrator access for pruning SMB shares and
+ may request access to complete removal of stale shares.
