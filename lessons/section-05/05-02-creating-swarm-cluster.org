@@ -2415,6 +2415,9 @@ ipconfig
 ```
 winworker: 172.24.248.7
 docker swarm join --token SWMTKN-1-465ztyegx85cx8i1gzsipo53m2xnzw000jej568n80bszl1u2o-1nek61xpib3pz11ip8gt6tznz 172.24.242.1:2377 --advertise-addr 172.24.248.7
+
+docker swarm join --token SWMTKN-1-5aj27guhefwi8cyfd2hkl7pbp02n5uhbcql2b4qtmvxezvchtw-a6czm7dtbgbwlykbe9g7wtc0x 172.22.53.218:2377 --advertise-addr 172.22.57.109
+
 ** Run a simple app
 
 Worker nodes just run your workloads, they're assigned work by the manager. You run `docker` commands on the manager and typically leave the workers alone.
@@ -2464,6 +2467,10 @@ echo $url
 
 curl $url
 ```
+
+worker: 172.22.51.3
+manager: 172.22.53.218
+winworker: 172.22.57.109
 
 > This is a multi-architecture .NET Core image, so it can run on Windows or Linux. Repeat the curl command to see different OS responses.
 
