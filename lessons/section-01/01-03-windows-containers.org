@@ -200,35 +200,35 @@ Now you should understand different ways of running containers and connecting to
 
 So far we've used Windows containers - next we'll see how Linux containers compare.
 
-** Transcript review
-*** env
- $env:docker4dotnet='c:\cprojects\github\khtan-private\docker4.net'
- cd $env:docker4dotnet
-*** docker version
-*** docker container run == docker run
- docker container run docker4dotnet/nanoserver hostname
- docker           run docker4dotnet/nanoserver hostname
-*** docker ls --all
- docker container ls
- docker container ls --all
-*** docker runs, try using -options before --options
- docker container run --interactive --tty --rm docker4dotnet/servercore powershell
- docker container run -it --tty --rm docker4dotnet/servercore powershell // -options, then --options
-   note that --rm does not have a -<> equivalent
- docker container run --detach --env sa_password=DockerCon!!! --name sql  --isolation=process docker4dotnet/sql-server:2017 
- docker container run -d --e sa_password=DockerCon!!! --name sql  --isolation=process docker4dotnet/sql-server:2017 
-*** docker run with port
- docker run  -p 8080:80 --name whoami docker4dotnet/whoami
- "I'm d0d0cfe389b6 running on Microsoft Windows 10.0.17763"
-*** docker run template
- docker run -it|-d --rm --name <> ??? // template
-*** docker top and logs
- docker container top sql 
- docker container logs sql 
-*** docker exec
- docker container exec sql powershell "Invoke-SqlCmd -Query 'SELECT GETDATE()'"
+* Transcript review
+** env
+$env:docker4dotnet='c:\cprojects\github\khtan-private\docker4.net'
+cd $env:docker4dotnet
+** docker version
+** docker container run == docker run
+docker container run docker4dotnet/nanoserver hostname
+docker           run docker4dotnet/nanoserver hostname
+** docker ls --all
+docker container ls
+docker container ls --all
+** docker runs, try using -options before --options
+docker container run --interactive --tty --rm docker4dotnet/servercore powershell
+docker container run -it --tty --rm docker4dotnet/servercore powershell // -options, then --options
+  note that --rm does not have a -<> equivalent
+docker container run --detach --env sa_password=DockerCon!!! --name sql  --isolation=process docker4dotnet/sql-server:2017 
+docker container run -d --e sa_password=DockerCon!!! --name sql  --isolation=process docker4dotnet/sql-server:2017 
+** docker run with port
+docker run  -p 8080:80 --name whoami docker4dotnet/whoami
+"I'm d0d0cfe389b6 running on Microsoft Windows 10.0.17763"
+** docker run template
+docker run -it|-d --rm --name <> ??? // template
+** docker top and logs
+docker container top sql 
+docker container logs sql 
+** docker exec
+docker container exec sql powershell "Invoke-SqlCmd -Query 'SELECT GETDATE()'"
 
- docker container exec -it sql powershell 
-*** docker rm
- docker container rm --force $(docker container ls --quiet --all)
- docker           rm --force $(docker container ls -qa)
+docker container exec -it sql powershell 
+** docker rm
+docker container rm --force $(docker container ls --quiet --all)
+docker           rm --force $(docker container ls -qa)
